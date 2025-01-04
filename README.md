@@ -22,16 +22,14 @@ This MES system can:
 ## Database Schema and Relationships
 
 ### **Database Models**
-
-```plaintext
-Enterprise (1) ─── (M) Site
-Site (1) ─── (M) Area
-Area (1) ─── (M) Line
-Line (1) ─── (M) Schedule
-Schedule (1) ─── (M) Run
-CountType (1) ─── (M) CountTag
-CountTag (1) ─── (M) CountHistory
-StateReason (1) ─── (M) StateHistory
+- Enterprise (1) ─── (M) Site
+- Site (1) ─── (M) Area
+- Area (1) ─── (M) Line
+- Line (1) ─── (M) Schedule
+- Schedule (1) ─── (M) Run
+- CountType (1) ─── (M) CountTag
+- CountTag (1) ─── (M) CountHistory
+- StateReason (1) ─── (M) StateHistory
 
 
 ## Tables and Relationships
