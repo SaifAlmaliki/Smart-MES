@@ -3,8 +3,6 @@ from sqlalchemy.orm import Session
 from typing import List
 from schemas.enterprise import AreaCreate, AreaUpdate, AreaOut
 from database.models.enterprise import Area, Site
-from utils.dependencies import get_db
-from auth.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/area",
