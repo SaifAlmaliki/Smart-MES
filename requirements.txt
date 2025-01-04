@@ -1,0 +1,7 @@
+fastapi
+sqlalchemy
+pydantic
+alembic
+jose
+psycopg2
+starlette
