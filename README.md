@@ -54,53 +54,39 @@ This MES system can:
 - CountTag: Tracks tags for sensors providing count data.
 - CountHistory: Stores historical count data.
 
-## Entity Relationship (ER) Diagram
+## API Endpoints
+### Base URL: http://localhost:8000
+- GET	/enterprise/	Retrieve all enterprises.
+- POST	/enterprise/	Create a new enterprise.
+- GET	/enterprise/{enterprise_id}	Retrieve a specific enterprise.
 
-Enterprise (1) ─── (M) Site
-Site (1) ─── (M) Area
-Area (1) ─── (M) Line
-Line (1) ─── (M) Schedule
-Schedule (1) ─── (M) Run
-CountType (1) ─── (M) CountTag
-CountTag (1) ─── (M) CountHistory
-StateReason (1) ─── (M) StateHistory
+### Site, Area, Line
+- GET	/site/	Retrieve all sites.
+- POST	/site/	Create a new site.
+- GET	/area/	Retrieve all areas.
+- POST	/area/	Create a new area.
+- GET	/line/	Retrieve all production lines.
+- POST	/line/	Create a new production line.
 
+### OEE Tracking
+- GET	/oee/	Retrieve all OEE records.
+- POST	/oee/	Create a new OEE record.
+- GET	/oee/{oee_id}	Retrieve a specific OEE record.
 
-API Endpoints
-Base URL: http://localhost:8000
-Enterprise Structure
-Method	Endpoint	Description
-GET	/enterprise/	Retrieve all enterprises.
-POST	/enterprise/	Create a new enterprise.
-GET	/enterprise/{enterprise_id}	Retrieve a specific enterprise.
-Site, Area, Line
-Method	Endpoint	Description
-GET	/site/	Retrieve all sites.
-POST	/site/	Create a new site.
-GET	/area/	Retrieve all areas.
-POST	/area/	Create a new area.
-GET	/line/	Retrieve all production lines.
-POST	/line/	Create a new production line.
-OEE Tracking
-Method	Endpoint	Description
-GET	/oee/	Retrieve all OEE records.
-POST	/oee/	Create a new OEE record.
-GET	/oee/{oee_id}	Retrieve a specific OEE record.
-Downtime Management
-Method	Endpoint	Description
-GET	/downtime/state-reason	Retrieve all downtime reasons.
-POST	/downtime/state-reason	Create a new downtime reason.
-GET	/downtime/state-history	Retrieve all downtime history records.
-POST	/downtime/state-history	Record a new downtime event.
-Work Order Management
-Method	Endpoint	Description
-GET	/workorder/	Retrieve all work orders.
-POST	/workorder/	Create a new work order.
-PUT	/workorder/{work_order_id}	Update a specific work order.
-Schedule and Run Management
-Method	Endpoint	Description
-GET	/schedule-run/schedule	Retrieve all schedules.
-POST	/schedule-run/schedule	Create a new schedule.
-GET	/schedule-run/run	Retrieve all runs.
-POST	/schedule-run/run	Create a new run.
-PUT	/schedule-run/run/{run_id}	Update a specific run.
+### Downtime Management
+- GET	/downtime/state-reason	Retrieve all downtime reasons.
+- POST	/downtime/state-reason	Create a new downtime reason.
+- GET	/downtime/state-history	Retrieve all downtime history records.
+- POST	/downtime/state-history	Record a new downtime event.
+
+### Work Order Management
+- GET	/workorder/	Retrieve all work orders.
+- POST	/workorder/	Create a new work order.
+- PUT	/workorder/{work_order_id}	Update a specific work order.
+
+### Schedule and Run Management
+- GET	/schedule-run/schedule	Retrieve all schedules.
+- POST	/schedule-run/schedule	Create a new schedule.
+- GET	/schedule-run/run	Retrieve all runs.
+- POST	/schedule-run/run	Create a new run.
+- PUT	/schedule-run/run/{run_id}	Update a specific run.
