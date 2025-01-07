@@ -28,10 +28,10 @@ def create_schedule(schedule_in: ScheduleCreate, db: Session = Depends(get_db)):
     new_schedule = Schedule(
         line_id=schedule_in.line_id,
         schedule_type=schedule_in.schedule_type,
-        schedule_start_datetime=schedule_in.start_datetime,
-        schedule_finish_datetime=schedule_in.finish_datetime,
+        schedule_start_datetime=schedule_in.schedule_start_datetime,
+        schedule_finish_datetime=schedule_in.schedule_finish_datetime,
         note=schedule_in.note,
-        timestamp=schedule_in.start_datetime
+        timestamp=schedule_in.schedule_start_datetime
     )
     db.add(new_schedule)
     db.commit()
@@ -58,10 +58,10 @@ def create_run(run_in: RunCreate, db: Session = Depends(get_db)):
 
     new_run = Run(
         schedule_id=run_in.schedule_id,
-        run_start_datetime=run_in.start_datetime,
-        run_stop_datetime=run_in.finish_datetime,
-        closed=(run_in.status.lower() == "completed"),
-        estimated_finish_time=schedule.schedule_finish_datetime
+        run_start_datetime=run_in.run_start_datetime,
+        run_stop_datetime=run_in.run_stop_datetime,
+        closed=run_in.closed,
+        estimated_finish_time=run_in.estimated_finish_time
     )
     db.add(new_run)
     db.commit()
