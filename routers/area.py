@@ -1,13 +1,13 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
 from schemas.enterprise import AreaCreate, AreaUpdate, AreaOut
 from database.models.enterprise import Area, Site
+from utils.dependencies import get_db
 
 router = APIRouter(
     prefix="/area",
-    tags=["Area"],
-    dependencies=[Depends(get_current_user)]
+    tags=["Area"]
 )
 
 @router.post("/", response_model=AreaOut, status_code=status.HTTP_201_CREATED)
@@ -15,10 +15,10 @@ def create_area(area_in: AreaCreate, db: Session = Depends(get_db)):
     """
     Create a new area.
     """
-    # Check if the parent site exists
-    parent_site = db.query(Site).filter(Site.id == area_in.site_id).first()
-    if not parent_site:
-        raise HTTPException(status_code=400, detail="Parent site not found.")
+    # Validate parent site exists
+    site = db.query(Site).filter(Site.id == area_in.parent_id).first()
+    if not site:
+        raise HTTPException(status_code=404, detail="Parent site not found")
 
     new_area = Area(**area_in.dict())
     db.add(new_area)

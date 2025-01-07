@@ -9,6 +9,7 @@ Splitting them out keeps product info distinct from the actual orders.
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from database.engine import Base
+from datetime import datetime
 
 class ProductCode(Base):
     __tablename__ = 'product_code'
@@ -38,11 +39,21 @@ class WorkOrder(Base):
     __tablename__ = 'work_order'
 
     id = Column(Integer, primary_key=True, index=True)
-    work_order_number = Column(String(50), nullable=False, unique=True)
-    quantity = Column(Integer, default=0)
-    closed = Column(Boolean, default=False)
-    timestamp = Column(DateTime, nullable=False)
+    order_number = Column(String(50), nullable=False, unique=True)
+    description = Column(String(500), nullable=False)
+    line_id = Column(Integer, ForeignKey('line.id'), nullable=False)
+    planned_start = Column(DateTime, nullable=False)
+    planned_end = Column(DateTime, nullable=False)
+    target_quantity = Column(Integer, nullable=False)
+    status = Column(String(20), nullable=False)
+    actual_start = Column(DateTime, nullable=True)
+    actual_end = Column(DateTime, nullable=True)
+    actual_quantity = Column(Integer, nullable=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Link to product
+    # Link to product (optional)
     product_code_id = Column(Integer, ForeignKey('product_code.id'), nullable=True)
     product_code = relationship("ProductCode", back_populates="work_orders")
+    # Link to line
+    line = relationship("Line", back_populates="work_orders")

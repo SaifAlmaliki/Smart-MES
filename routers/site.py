@@ -1,16 +1,13 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
 from schemas.enterprise import SiteCreate, SiteUpdate, SiteOut
 from database.models.enterprise import Site, Enterprise
 from utils.dependencies import get_db
-from auth.dependencies import get_current_user
-from utils.exception_handler import CustomException
 
 router = APIRouter(
     prefix="/site",
-    tags=["Site"],
-    dependencies=[Depends(get_current_user)],  # Protect all endpoints with JWT
+    tags=["Site"]
 )
 
 @router.post("/", response_model=SiteOut, status_code=status.HTTP_201_CREATED)
@@ -18,10 +15,10 @@ def create_site(site_in: SiteCreate, db: Session = Depends(get_db)):
     """
     Create a new site.
     """
-    # Check if the parent enterprise exists
-    parent_enterprise = db.query(Enterprise).filter(Enterprise.id == site_in.enterprise_id).first()
-    if not parent_enterprise:
-        raise CustomException("Parent enterprise not found.", status_code=status.HTTP_400_BAD_REQUEST)
+    # Validate parent enterprise exists
+    enterprise = db.query(Enterprise).filter(Enterprise.id == site_in.parent_id).first()
+    if not enterprise:
+        raise HTTPException(status_code=404, detail="Parent enterprise not found")
 
     new_site = Site(**site_in.dict())
     db.add(new_site)

@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 class CountTypeBase(BaseModel):
     count_type: str = Field(..., max_length=50, description="Type of count (e.g., Good, Bad)")

@@ -78,3 +78,23 @@ class LineOut(LineBase):
 
     class Config:
         orm_mode = True
+
+
+# Cell Schema
+class CellBase(BaseModel):
+    name: str = Field(..., max_length=100, description="Name of the cell")
+    parent_id: int = Field(..., description="ID of the parent line")
+    disabled: bool = Field(default=False, description="Indicates if the cell is disabled")
+
+class CellCreate(CellBase):
+    pass
+
+class CellUpdate(BaseModel):
+    name: Optional[str] = Field(None, max_length=100)
+    disabled: Optional[bool] = Field(None)
+
+class CellOut(CellBase):
+    id: int = Field(..., description="ID of the cell")
+
+    class Config:
+        orm_mode = True

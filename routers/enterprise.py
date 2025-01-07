@@ -5,12 +5,10 @@ from typing import List
 from schemas.enterprise import EnterpriseCreate, EnterpriseUpdate, EnterpriseOut
 from database.models.enterprise import Enterprise
 from utils.dependencies import get_db
-from auth.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/enterprise",
-    tags=["Enterprise"],
-    dependencies=[Depends(get_current_user)]  # Protect all endpoints
+    tags=["Enterprise"]
 )
 
 @router.post("/", response_model=EnterpriseOut, status_code=status.HTTP_201_CREATED)

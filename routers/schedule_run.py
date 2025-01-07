@@ -1,13 +1,17 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
-from schemas.schedule_run import ScheduleCreate, ScheduleUpdate, ScheduleOut, RunCreate, RunUpdate, RunOut
-from database import get_db
-from models.schedule_run import Schedule, Run
+from schemas.schedule_run import (
+    ScheduleCreate, ScheduleUpdate, ScheduleOut,
+    RunCreate, RunUpdate, RunOut
+)
+from database.models.schedule_run import Schedule, Run
+from database.models.enterprise import Line
+from utils.dependencies import get_db
 
 router = APIRouter(
     prefix="/schedule-run",
-    tags=["Schedule and Run"]
+    tags=["ScheduleRun"]
 )
 
 # Schedule Routes
@@ -16,7 +20,19 @@ def create_schedule(schedule_in: ScheduleCreate, db: Session = Depends(get_db)):
     """
     Create a new schedule.
     """
-    new_schedule = Schedule(**schedule_in.dict())
+    # Validate line exists
+    line = db.query(Line).filter(Line.id == schedule_in.line_id).first()
+    if not line:
+        raise HTTPException(status_code=404, detail="Production line not found")
+
+    new_schedule = Schedule(
+        line_id=schedule_in.line_id,
+        schedule_type=schedule_in.schedule_type,
+        schedule_start_datetime=schedule_in.start_datetime,
+        schedule_finish_datetime=schedule_in.finish_datetime,
+        note=schedule_in.note,
+        timestamp=schedule_in.start_datetime
+    )
     db.add(new_schedule)
     db.commit()
     db.refresh(new_schedule)
@@ -35,7 +51,18 @@ def create_run(run_in: RunCreate, db: Session = Depends(get_db)):
     """
     Create a new production run.
     """
-    new_run = Run(**run_in.dict())
+    # Validate schedule exists
+    schedule = db.query(Schedule).filter(Schedule.id == run_in.schedule_id).first()
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+
+    new_run = Run(
+        schedule_id=run_in.schedule_id,
+        run_start_datetime=run_in.start_datetime,
+        run_stop_datetime=run_in.finish_datetime,
+        closed=(run_in.status.lower() == "completed"),
+        estimated_finish_time=schedule.schedule_finish_datetime
+    )
     db.add(new_run)
     db.commit()
     db.refresh(new_run)
@@ -49,15 +76,19 @@ def get_all_runs(db: Session = Depends(get_db)):
     return db.query(Run).all()
 
 @router.put("/run/{run_id}", response_model=RunOut)
-def update_run(run_id: int, run_upd: RunUpdate, db: Session = Depends(get_db)):
+def update_run(run_id: int, run_in: RunUpdate, db: Session = Depends(get_db)):
     """
     Update an existing production run.
     """
     run = db.query(Run).filter(Run.id == run_id).first()
     if not run:
-        raise HTTPException(status_code=404, detail="Run not found.")
-    for key, value in run_upd.dict(exclude_unset=True).items():
-        setattr(run, key, value)
+        raise HTTPException(status_code=404, detail="Run not found")
+
+    if run_in.finish_datetime:
+        run.run_stop_datetime = run_in.finish_datetime
+    if run_in.status:
+        run.closed = (run_in.status.lower() == "completed")
+
     db.commit()
     db.refresh(run)
     return run

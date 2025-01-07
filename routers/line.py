@@ -1,27 +1,24 @@
-# file: app/routers/line.py
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
 from schemas.enterprise import LineCreate, LineUpdate, LineOut
 from database.models.enterprise import Line, Area
 from utils.dependencies import get_db
-from auth.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/line",
-    tags=["Line"],
-    dependencies=[Depends(get_current_user)]
+    tags=["Line"]
 )
 
 @router.post("/", response_model=LineOut, status_code=status.HTTP_201_CREATED)
 def create_line(line_in: LineCreate, db: Session = Depends(get_db)):
     """
-    Create a new line.
+    Create a new production line.
     """
-    # Check if the parent area exists
-    parent_area = db.query(Area).filter(Area.id == line_in.area_id).first()
-    if not parent_area:
-        raise HTTPException(status_code=400, detail="Parent area not found.")
+    # Validate parent area exists
+    area = db.query(Area).filter(Area.id == line_in.parent_id).first()
+    if not area:
+        raise HTTPException(status_code=404, detail="Parent area not found")
 
     new_line = Line(**line_in.dict())
     db.add(new_line)

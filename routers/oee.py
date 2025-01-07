@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from schemas.oee import CountTypeCreate, CountTypeUpdate, CountTypeOut, CountTagCreate, CountTagOut, CountHistoryCreate, CountHistoryOut
-from database import get_db
-from models.oee import CountType, CountTag, CountHistory
-from utils.exception_handler import CustomException
+from schemas.oee import OEECreate, OEEOut
+from schemas.count_type import CountTypeCreate, CountTypeUpdate, CountTypeOut
+from schemas.count_tag import CountTagCreate, CountTagOut
+from schemas.count_history import CountHistoryCreate, CountHistoryOut
+from database.models.oee import OEE, CountType, CountTag, CountHistory
+from utils.dependencies import get_db
 
 router = APIRouter(
     prefix="/oee",

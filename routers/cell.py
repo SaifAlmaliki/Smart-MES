@@ -1,16 +1,13 @@
-# file: app/routers/cell.py
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
 from schemas.enterprise import CellCreate, CellUpdate, CellOut
 from database.models.enterprise import Cell, Line
 from utils.dependencies import get_db
-from auth.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/cell",
-    tags=["Cell"],
-    dependencies=[Depends(get_current_user)]
+    tags=["Cell"]
 )
 
 @router.post("/", response_model=CellOut, status_code=status.HTTP_201_CREATED)
@@ -18,10 +15,10 @@ def create_cell(cell_in: CellCreate, db: Session = Depends(get_db)):
     """
     Create a new cell.
     """
-    # Check if the parent line exists
-    parent_line = db.query(Line).filter(Line.id == cell_in.line_id).first()
-    if not parent_line:
-        raise HTTPException(status_code=400, detail="Parent line not found.")
+    # Validate parent line exists
+    line = db.query(Line).filter(Line.id == cell_in.parent_id).first()
+    if not line:
+        raise HTTPException(status_code=404, detail="Parent line not found")
 
     new_cell = Cell(**cell_in.dict())
     db.add(new_cell)

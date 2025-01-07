@@ -4,13 +4,10 @@ from typing import List
 from schemas.downtime import StateReasonCreate, StateReasonUpdate, StateReasonOut, StateHistoryCreate, StateHistoryOut
 from database.models.downtime import StateReason, StateHistory
 from utils.dependencies import get_db
-from auth.dependencies import get_current_user
-from utils.exception_handler import CustomException
 
 router = APIRouter(
     prefix="/downtime",
-    tags=["Downtime"],
-    dependencies=[Depends(get_current_user)]  # Protect all endpoints with JWT
+    tags=["Downtime"]
 )
 
 # StateReason CRUD
@@ -21,7 +18,7 @@ def create_state_reason(state_reason_in: StateReasonCreate, db: Session = Depend
     """
     existing = db.query(StateReason).filter(StateReason.reason_code == state_reason_in.reason_code).first()
     if existing:
-        raise CustomException("StateReason with this code already exists.")
+        raise HTTPException(status_code=400, detail="StateReason with this code already exists.")
     new_state_reason = StateReason(**state_reason_in.dict())
     db.add(new_state_reason)
     db.commit()
@@ -69,7 +66,7 @@ def create_state_history(state_history_in: StateHistoryCreate, db: Session = Dep
     # Ensure StateReason exists
     state_reason = db.query(StateReason).filter(StateReason.id == state_history_in.state_reason_id).first()
     if not state_reason:
-        raise CustomException("Invalid StateReason.")
+        raise HTTPException(status_code=400, detail="Invalid StateReason.")
     new_state_history = StateHistory(**state_history_in.dict())
     db.add(new_state_history)
     db.commit()

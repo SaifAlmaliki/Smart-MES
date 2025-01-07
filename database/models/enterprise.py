@@ -1,4 +1,3 @@
-
 """
 Defines the enterprise hierarchy (ISA-95 Levels):
 - Enterprise
@@ -65,6 +64,10 @@ class Line(Base):
 
     # One-to-many: Line -> Cell
     cells = relationship("Cell", back_populates="line")
+    # One-to-many: Line -> WorkOrder
+    work_orders = relationship("WorkOrder", back_populates="line")
+    # One-to-many: Line -> OEE
+    oee_records = relationship("OEE", back_populates="line")
 
 class Cell(Base):
     __tablename__ = 'cell'
